@@ -227,22 +227,22 @@ if __name__ == "__main__":
     print("GENERATING TABLE WITH UNKNOWNS")
     print("Tree Height & Entropy Test & Gini Test & ME Test & Entropy Train & Gini Train & ME Train\\\\ \n\hline\hline")
 
-    # for i in range(1,17):
-    #     bank_tree_entropy = id3(0, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
-    #                             most_common_value(bank_table_train[:,-1]))
-    #     bank_tree_gini = id3(1, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
-    #                             most_common_value(bank_table_train[:, -1]))
-    #     bank_tree_me = id3(2, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
-    #                          most_common_value(bank_table_train[:, -1]))
-    #
-    #     print(str(i) + ' & '
-    #     + str(test_tree(bank_tree_entropy, bank_attributes, bank_table_test)) + ' & '
-    #     + str(test_tree(bank_tree_gini, bank_attributes, bank_table_test)) + ' & '
-    #     + str(test_tree(bank_tree_me, bank_attributes, bank_table_test)) + ' & '
-    #     + str(test_tree(bank_tree_entropy, bank_attributes, bank_table_train)) + ' & '
-    #     + str(test_tree(bank_tree_gini, bank_attributes, bank_table_train)) + ' & '
-    #     + str(test_tree(bank_tree_me, bank_attributes, bank_table_train))
-    #           + "\\\\ \hline")
+    for i in range(1,17):
+        bank_tree_entropy = id3(0, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
+                                most_common_value(bank_table_train[:,-1]))
+        bank_tree_gini = id3(1, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
+                                most_common_value(bank_table_train[:, -1]))
+        bank_tree_me = id3(2, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
+                             most_common_value(bank_table_train[:, -1]))
+
+        print(str(i) + ' & '
+        + str(test_tree(bank_tree_entropy, bank_attributes, bank_table_test)) + ' & '
+        + str(test_tree(bank_tree_gini, bank_attributes, bank_table_test)) + ' & '
+        + str(test_tree(bank_tree_me, bank_attributes, bank_table_test)) + ' & '
+        + str(test_tree(bank_tree_entropy, bank_attributes, bank_table_train)) + ' & '
+        + str(test_tree(bank_tree_gini, bank_attributes, bank_table_train)) + ' & '
+        + str(test_tree(bank_tree_me, bank_attributes, bank_table_train))
+              + "\\\\ \hline")
 
     # We will not repeat the same code, but get rid of "unknown" values.
 
