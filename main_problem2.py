@@ -177,36 +177,95 @@ def test_tree(tree, attributes, test_table):
 
     return correct/(incorrect+correct)
 
+def trans_numer_to_bin(table, column): # Transform numerical attribute to binary attribute
+    y = [float(x) for x in table[:, column]]
+    med = np.median(y)
+    table[:, column] = ['over_med' if y[i] >= med else 'under_med' for i in range(np.size(y,0))]
+    return table
+
+def eliminate_unknowns(table):
+    for i in range(np.size(table, 1)):
+        attr = table[:, i]
+        mcv = most_common_value(attr)
+        attr_no_unknown = [mcv if attr[j] == 'unknown' else attr[j] for j in range(np.size(attr))]
+        table[:, i] = attr_no_unknown
+
+    return table
+
+
 if __name__ == "__main__":
 
     # Parse files
-    car4_table_train = file_parser("./car-4/train.csv")
-    car4_table_test = file_parser("./car-4/test.csv")
+    bank_table_train = file_parser("./bank-4/train.csv")
+    bank_table_test = file_parser("./bank-4/test.csv")
 
-    car4_attributes = ['buying', 'maint', 'doors', 'persons', 'lug_boot', 'safety']
-    car4_attribute_values = [['vhigh', 'high', 'med', 'low'],
-    ['vhigh', 'high', 'med', 'low'],
-     ['2', '3', '4', '5more'],
-    ['2', '4', 'more'],
-    ['small', 'med', 'big'],
-    ['low', 'med', 'high']]
+    bank_attributes = ['age', 'job', 'marital', 'education', 'default', 'balance', 'housing', 'loan', 'contact', 'day', 'month', 'duration', 'campaign', 'pdays', 'previous', 'poutcome']
+    bank_attribute_values = [['under_med', 'over_med'],
+    ["admin.","unknown","unemployed","management","housemaid","entrepreneur","student",
+                                       "blue-collar","self-employed","retired","technician","services"],
+    ["married","divorced","single"],
+    ["unknown","secondary","primary","tertiary"],
+    ["yes","no"],
+    ['under_med', 'over_med'],
+     ["yes","no"],
+     ["yes","no"],
+     ["unknown","telephone","cellular"],
+     ['under_med', 'over_med'],
+     ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"],
+     ['under_med', 'over_med'],
+     ['under_med', 'over_med'],
+     ['under_med', 'over_med'],
+     ['under_med', 'over_med'],
+     ["unknown","other","failure","success"]]
 
+    for i in [0, 5, 9, 11, 12, 13, 14]:
+        bank_table_train = trans_numer_to_bin(bank_table_train, i)
+        bank_table_test = trans_numer_to_bin(bank_table_test, i)
 
     # Run all three with different tree heights:
 
-    for i in range(1,7):
-        car4_tree_entropy = id3(0, car4_table_train, i, 0, car4_attributes, car4_attribute_values,
-                                most_common_value(car4_table_train[:,-1]))
-        car4_tree_gini = id3(1, car4_table_train, i, 0, car4_attributes, car4_attribute_values,
-                                most_common_value(car4_table_train[:, -1]))
-        car4_tree_me = id3(2, car4_table_train, i, 0, car4_attributes, car4_attribute_values,
-                             most_common_value(car4_table_train[:, -1]))
+    print("GENERATING TABLE WITH UNKNOWNS")
+    print("Tree Height & Entropy Test & Gini Test & ME Test & Entropy Train & Gini Train & ME Train\\\\ \n\hline\hline")
 
-        print('---------- Tree Height ' + str(i) + ' ----------')
-        print('ENTR-Based ID3 on Test w/ Tree Height ' + str(i) + ': ' + str(test_tree(car4_tree_entropy, car4_attributes, car4_table_test)))
-        print('GINI-Based ID3 on Test w/ Tree Height ' + str(i) + ': ' + str(test_tree(car4_tree_gini, car4_attributes, car4_table_test)))
-        print('MAJR-Based ID3 on Test w/ Tree Height ' + str(i) + ': ' + str(test_tree(car4_tree_me, car4_attributes, car4_table_test)))
-        print('ENTR-Based ID3 on Train w/ Tree Height ' + str(i) + ': ' + str(test_tree(car4_tree_entropy, car4_attributes, car4_table_train)))
-        print('GINI-Based ID3 on Train w/ Tree Height ' + str(i) + ': ' + str(test_tree(car4_tree_gini, car4_attributes, car4_table_train)))
-        print('MAJR-Based ID3 on Train w/ Tree Height ' + str(i) + ': ' + str(test_tree(car4_tree_me, car4_attributes, car4_table_train)))
-        print('\n')
+    # for i in range(1,17):
+    #     bank_tree_entropy = id3(0, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
+    #                             most_common_value(bank_table_train[:,-1]))
+    #     bank_tree_gini = id3(1, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
+    #                             most_common_value(bank_table_train[:, -1]))
+    #     bank_tree_me = id3(2, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
+    #                          most_common_value(bank_table_train[:, -1]))
+    #
+    #     print(str(i) + ' & '
+    #     + str(test_tree(bank_tree_entropy, bank_attributes, bank_table_test)) + ' & '
+    #     + str(test_tree(bank_tree_gini, bank_attributes, bank_table_test)) + ' & '
+    #     + str(test_tree(bank_tree_me, bank_attributes, bank_table_test)) + ' & '
+    #     + str(test_tree(bank_tree_entropy, bank_attributes, bank_table_train)) + ' & '
+    #     + str(test_tree(bank_tree_gini, bank_attributes, bank_table_train)) + ' & '
+    #     + str(test_tree(bank_tree_me, bank_attributes, bank_table_train))
+    #           + "\\\\ \hline")
+
+    # We will not repeat the same code, but get rid of "unknown" values.
+
+    bank_table_train = eliminate_unknowns(bank_table_train)
+    bank_table_train = eliminate_unknowns(bank_table_test)
+
+    print("GENERATING TABLE WITHOUT UNKNOWNS")
+    print(
+        "Tree Height & Entropy Test & Gini Test & ME Test & Entropy Train & Gini Train & ME Train\\\\ \n\hline\hline")
+
+    for i in range(1, 17):
+        bank_tree_entropy = id3(0, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
+                                most_common_value(bank_table_train[:, -1]))
+        bank_tree_gini = id3(1, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
+                             most_common_value(bank_table_train[:, -1]))
+        bank_tree_me = id3(2, bank_table_train, i, 0, bank_attributes, bank_attribute_values,
+                           most_common_value(bank_table_train[:, -1]))
+
+        print(str(i) + ' & '
+              + str(test_tree(bank_tree_entropy, bank_attributes, bank_table_test)) + ' & '
+              + str(test_tree(bank_tree_gini, bank_attributes, bank_table_test)) + ' & '
+              + str(test_tree(bank_tree_me, bank_attributes, bank_table_test)) + ' & '
+              + str(test_tree(bank_tree_entropy, bank_attributes, bank_table_train)) + ' & '
+              + str(test_tree(bank_tree_gini, bank_attributes, bank_table_train)) + ' & '
+              + str(test_tree(bank_tree_me, bank_attributes, bank_table_train))
+              + "\\\\ \hline")
